@@ -5,7 +5,7 @@ export default function Layout({ children }: any) {
     <div className="flex h-screen">
       <Sidebar />
 
-      <main className="flex-1 p-6">
+      <main className="flex-1 bg-white p-8 overflow-y-auto">
         {children}
       </main>
     </div>

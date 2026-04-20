@@ -9,7 +9,7 @@ export default function NotesPanel() {
   const { selectedClient } = useContext(ClientContext);
 
   const { data, isLoading } = useNotes(selectedClient?.id);
-  const { mutate } = useCreateNote(selectedClient?.id);
+  const { mutate, isPending } = useCreateNote();
 
   const [title, setTitle] = useState("");
 
@@ -18,11 +18,11 @@ export default function NotesPanel() {
   }
 
   const handleCreate = () => {
-    if (!title) return;
+    if (!title.trim()) return;
 
     mutate({
       title,
-      content: "",
+      content: title,
       type: "idea",
       client: selectedClient.id,
     });
@@ -36,21 +36,16 @@ export default function NotesPanel() {
         {selectedClient.name}
       </h2>
 
-      {/* 🔥 Crear nota */}
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4">
         <input
-          className="border p-2 rounded w-full"
-          placeholder="New note..."
+          className="w-full p-4 text-lg border rounded-lg outline-none focus:ring-1 focus:ring-gray-400"
+          placeholder="Start typing a note..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleCreate();
+          }}
         />
-
-        <button
-          onClick={handleCreate}
-          className="bg-black text-white px-4 rounded"
-        >
-          Add
-        </button>
       </div>
 
       {isLoading && <p>Loading...</p>}
@@ -59,18 +54,22 @@ export default function NotesPanel() {
         <p className="text-gray-500">No notes yet</p>
       )}
 
+    <div className="space-y-3">
       {data?.map((note: any) => (
         <div
           key={note.id}
-          className="p-4 border rounded mb-2 hover:shadow-sm transition"
+          className="p-4 bg-white border rounded-lg hover:shadow-sm transition"
         >
-          <p className="font-medium">{note.title}</p>
+          <div className="flex justify-between items-center">
+            <p className="font-medium text-sm">{note.title}</p>
 
-          <span className="text-xs text-gray-400">
-            {note.type}
-          </span>
+            <span className="text-xs text-gray-400 capitalize">
+              {note.type}
+            </span>
+          </div>
         </div>
       ))}
+    </div>
     </div>
   );
 }

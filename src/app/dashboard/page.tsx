@@ -1,7 +1,7 @@
 "use client";
 
-import NotesPanel from "@/features/notes/components/NotesPanel";
 import Layout from "@/shared/components/Layout";
+import NotesPanel from "@/features/notes/components/NotesPanel";
 
 export default function Dashboard() {
   return (

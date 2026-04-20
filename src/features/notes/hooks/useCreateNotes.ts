@@ -1,7 +1,9 @@
+"use client";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/utils/axios";
 
-export const useCreateNote = (clientId?: number) => {
+export const useCreateNote = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -9,10 +11,10 @@ export const useCreateNote = (clientId?: number) => {
       const res = await api.post("/notes/", data);
       return res.data;
     },
-    onSuccess: () => {
-      // 🔥 refresca notas automáticamente
+
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["notes", clientId],
+        queryKey: ["notes", variables.client],
       });
     },
   });
