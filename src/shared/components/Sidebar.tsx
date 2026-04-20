@@ -4,11 +4,20 @@ import { useClients } from "@/features/clients/hooks/useClients";
 import { useContext } from "react";
 import { ClientContext } from "@/app/providers";
 import { useCreateClient } from "@/features/clients/hooks/useCreateClient";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const { data } = useClients();
   const { setSelectedClient, selectedClient } = useContext(ClientContext);
   const { mutate } = useCreateClient();
+  const router = useRouter();
+
+const handleLogout = () => {
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+
+  router.push("/login");
+};
 
   return (
     <div className="w-64 border-r p-4">
@@ -34,6 +43,12 @@ export default function Sidebar() {
           {client.name}
         </div>
       ))}
+      <button
+        onClick={handleLogout}
+        className="mt-4 text-red-500"
+      >
+        Logout
+      </button>
     </div>
   );
 }
