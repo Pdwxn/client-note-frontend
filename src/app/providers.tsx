@@ -9,11 +9,17 @@ const queryClient = new QueryClient();
 
 export default function Providers({ children }: any) {
   const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedNote, setSelectedNote] = useState(null);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ClientContext.Provider
-        value={{ selectedClient, setSelectedClient }}
+        value={{
+          selectedClient,
+          setSelectedClient,
+          selectedNote,
+          setSelectedNote,
+        }}
       >
         {children}
       </ClientContext.Provider>

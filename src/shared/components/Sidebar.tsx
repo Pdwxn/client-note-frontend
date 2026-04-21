@@ -1,64 +1,134 @@
 "use client";
 
 import { useClients } from "@/features/clients/hooks/useClients";
-import { useContext } from "react";
-import { ClientContext } from "@/app/providers";
+import { useNotes } from "@/features/notes/hooks/useNotes";
 import { useCreateClient } from "@/features/clients/hooks/useCreateClient";
-import { useRouter } from "next/navigation";
+import { useCreateNote } from "@/features/notes/hooks/useCreateNotes";
+import { useContext, useState } from "react";
+import { ClientContext } from "@/app/providers";
+import Modal from "@/shared/components/Modal";
 
 export default function Sidebar() {
-  const { data } = useClients();
-  const { setSelectedClient, selectedClient } = useContext(ClientContext);
-  const { mutate } = useCreateClient();
-  const router = useRouter();
+  const { selectedClient, setSelectedClient, selectedNote, setSelectedNote } =
+    useContext(ClientContext);
 
-  const handleLogout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
+  const { data: clients } = useClients();
+  const { data: notes } = useNotes(selectedClient?.id);
 
-    router.push("/login");
+  const { mutate: createClient } = useCreateClient();
+  const { mutate: createNote } = useCreateNote();
+
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+
+  // 🔹 Crear cliente
+  const handleCreateClient = () => {
+    if (!name.trim()) return;
+
+    createClient({ name, email: "" });
+    setOpen(false);
+    setName("");
+  };
+
+  // 🔹 Crear nota
+  const handleCreateNote = () => {
+    if (!selectedClient) return;
+
+    createNote(
+      {
+        title: "Untitled",
+        content: "",
+        type: "idea",
+        client: selectedClient.id,
+      },
+      {
+        onSuccess: (newNote) => {
+          setSelectedNote(newNote);
+        },
+      },
+    );
   };
 
   return (
     <div className="w-64 border-r bg-white p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-500">CLIENTS</h2>
+      {/* 🔴 ESTADO 1: CLIENTS */}
+      {!selectedClient && (
+        <>
+          <div className="flex justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-500">CLIENTS</h2>
 
-        <button
-          onClick={() =>
-            mutate({ name: "Nuevo Cliente", email: "test@test.com" })
-          }
-          className="text-sm px-2 py-1 rounded hover:bg-gray-100"
-        >
-          +
-        </button>
-      </div>
-
-      <div className="flex-1 space-y-1">
-        {data?.map((client: any) => (
-          <div
-            key={client.id}
-            onClick={() => setSelectedClient(client)}
-            className={`px-3 py-2 rounded cursor-pointer text-sm transition ${
-              selectedClient?.id === client.id
-                ? "bg-gray-200 font-medium"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            {client.name}
+            <button onClick={() => setOpen(true)}>+</button>
           </div>
-        ))}
-      </div>
 
-      <button
-        onClick={() => {
-          localStorage.clear();
-          window.location.href = "/login";
-        }}
-        className="mt-4 text-xs text-gray-500 hover:text-black"
-      >
-        Logout
-      </button>
+          <div className="space-y-1">
+            {clients?.map((client: any) => (
+              <div
+                key={client.id}
+                onClick={() => setSelectedClient(client)}
+                className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
+              >
+                {client.name}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 🔵 ESTADO 2: NOTES */}
+      {selectedClient && (
+        <>
+          <button
+            onClick={() => {
+              setSelectedClient(null);
+              setSelectedNote(null);
+            }}
+            className="text-xs text-gray-500 mb-3"
+          >
+            ← Back
+          </button>
+
+          <div className="flex justify-between mb-4">
+            <h3 className="text-sm font-semibold">{selectedClient.name}</h3>
+
+            <button onClick={handleCreateNote}>+</button>
+          </div>
+
+          <div className="space-y-1">
+            {notes?.map((note: any) => (
+              <div
+                key={note.id}
+                onClick={() => setSelectedNote(note)}
+                className={`px-3 py-2 rounded cursor-pointer ${
+                  selectedNote?.id === note.id
+                    ? "bg-gray-200"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                {note.title || "Untitled"}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* MODAL CLIENT */}
+      {open && (
+        <Modal onClose={() => setOpen(false)}>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Client name"
+            className="w-full border p-2 mb-3"
+          />
+
+          <button
+            onClick={handleCreateClient}
+            className="w-full bg-black text-white py-2"
+          >
+            Create
+          </button>
+        </Modal>
+      )}
     </div>
   );
 }
