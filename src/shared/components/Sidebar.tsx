@@ -4,33 +4,52 @@ import { useClients } from "@/features/clients/hooks/useClients";
 import { useNotes } from "@/features/notes/hooks/useNotes";
 import { useCreateClient } from "@/features/clients/hooks/useCreateClient";
 import { useCreateNote } from "@/features/notes/hooks/useCreateNotes";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ClientContext } from "@/app/providers";
 import Modal from "@/shared/components/Modal";
+import { useDeleteClient } from "@/features/clients/hooks/useDeleteClient";
+import { useUpdateClient } from "@/features/clients/hooks/useUpdateClient";
+import { toast } from "sonner";
 
 export default function Sidebar() {
   const { selectedClient, setSelectedClient, selectedNote, setSelectedNote } =
     useContext(ClientContext);
 
-  const { data: clients } = useClients();
-  const { data: notes } = useNotes(selectedClient?.id);
+  const { data: clients, isLoading: loadingClients } = useClients();
+  const { data: notes, isLoading: loadingNotes } = useNotes(selectedClient?.id);
 
   const { mutate: createClient } = useCreateClient();
   const { mutate: createNote } = useCreateNote();
+  const { mutate: deleteClient } = useDeleteClient();
+  const { mutate: updateClient } = useUpdateClient();
 
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // 🔹 Crear cliente
+  const [name, setName] = useState("");
+  const [clientName, setClientName] = useState("");
+
+  useEffect(() => {
+    if (selectedClient) {
+      setClientName(selectedClient.name || "");
+    }
+  }, [selectedClient]);
+
   const handleCreateClient = () => {
     if (!name.trim()) return;
 
-    createClient({ name, email: "" });
+    createClient(
+      { name, email: "" },
+      {
+        onSuccess: () => toast.success("Client created"),
+        onError: () => toast.error("Error creating client"),
+      },
+    );
+
     setOpen(false);
     setName("");
   };
 
-  // 🔹 Crear nota
   const handleCreateNote = () => {
     if (!selectedClient?.id) return;
 
@@ -44,18 +63,30 @@ export default function Sidebar() {
       {
         onSuccess: (newNote) => {
           setSelectedNote(newNote);
+          toast.success("Note created");
         },
+        onError: () => toast.error("Error creating note"),
       },
     );
   };
 
-  function updateClient(arg0: { id: any; data: { name: string } }): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleUpdateClient = () => {
+    if (!selectedClient) return;
+
+    updateClient(
+      {
+        id: selectedClient.id,
+        data: { name: clientName },
+      },
+      {
+        onSuccess: () => toast.success("Client updated"),
+        onError: () => toast.error("Error updating client"),
+      },
+    );
+  };
 
   return (
-    <div className="w-64 border-r bg-white p-4 flex flex-col">
-      {/* CLIENTS */}
+    <div className="w-64 border-r bg-white px-3 py-4 flex flex-col h-full">
       {!selectedClient && (
         <>
           <div className="flex justify-between items-center mb-4">
@@ -65,11 +96,15 @@ export default function Sidebar() {
 
             <button
               onClick={() => setOpen(true)}
-              className="px-2 py-1 rounded hover:bg-gray-100"
+              className="px-2 py-1 rounded hover:bg-gray-100 transition"
             >
               +
             </button>
           </div>
+
+          {loadingClients && (
+            <p className="text-sm text-gray-400">Loading clients...</p>
+          )}
 
           <div className="space-y-1">
             {clients?.map((client: any) => (
@@ -79,7 +114,7 @@ export default function Sidebar() {
                   setSelectedClient(client);
                   setSelectedNote(null);
                 }}
-                className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer text-sm"
+                className="px-3 py-2 rounded-md cursor-pointer text-sm transition hover:bg-gray-100 text-gray-700"
               >
                 {client.name}
               </div>
@@ -88,7 +123,6 @@ export default function Sidebar() {
         </>
       )}
 
-      {/* NOTES */}
       {selectedClient && (
         <>
           <button
@@ -96,31 +130,51 @@ export default function Sidebar() {
               setSelectedClient(null);
               setSelectedNote(null);
             }}
-            className="text-xs text-gray-400 mb-3 hover:text-black"
+            className="text-xs text-gray-400 mb-3 hover:text-black transition"
           >
             ← Back
           </button>
 
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-semibold">{selectedClient.name}</h3>
+          <div className="mb-4">
+            <input
+              value={clientName || ""}
+              onChange={(e) => setClientName(e.target.value)}
+              onBlur={handleUpdateClient}
+              className="w-full text-sm font-semibold outline-none placeholder:text-gray-300"
+            />
+
+            <button
+              onClick={() => setConfirmOpen(true)}
+              className="text-xs text-red-500 hover:underline mt-2"
+            >
+              Delete
+            </button>
+          </div>
+
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs text-gray-400 tracking-wide">NOTES</span>
 
             <button
               onClick={handleCreateNote}
-              className="px-2 py-1 rounded hover:bg-gray-100"
+              className="px-2 py-1 rounded hover:bg-gray-100 transition"
             >
               +
             </button>
           </div>
+
+          {loadingNotes && (
+            <p className="text-sm text-gray-400">Loading notes...</p>
+          )}
 
           <div className="space-y-1 overflow-y-auto">
             {notes?.map((note: any) => (
               <div
                 key={note.id}
                 onClick={() => setSelectedNote(note)}
-                className={`px-3 py-2 rounded cursor-pointer text-sm ${
+                className={`px-3 py-2 rounded-md cursor-pointer text-sm transition ${
                   selectedNote?.id === note.id
                     ? "bg-gray-200 font-medium"
-                    : "hover:bg-gray-100"
+                    : "hover:bg-gray-100 text-gray-600"
                 }`}
               >
                 {note.title?.trim() || "Untitled"}
@@ -130,50 +184,80 @@ export default function Sidebar() {
         </>
       )}
 
-      {/* MODAL */}
-      {open && (
-        <Modal onClose={() => setOpen(false)}>
-          <h3 className="text-lg font-semibold mb-3">New Client</h3>
-
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Client name"
-            className="w-full border p-2 mb-3 rounded"
-          />
-
-          {selectedClient && (
-            <input
-              value={selectedClient.name || ""}
-              onChange={(e) =>
-                updateClient({
-                  id: selectedClient.id,
-                  data: { name: e.target.value },
-                })
-              }
-              className="w-full border p-2 mb-3 rounded"
-            />
-          )}
-
-          <button
-            onClick={handleCreateClient}
-            className="w-full bg-black text-white py-2 rounded"
-          >
-            Create
-          </button>
-        </Modal>
-      )}
-
-      {/* LOGOUT */}
       <button
         onClick={() => {
           localStorage.clear();
           window.location.href = "/login";
         }}
-        className="mt-4 text-xs text-gray-400 hover:text-black"
+        className="mt-auto text-xs text-gray-500 hover:text-black pt-4"
       >
         Logout
       </button>
+
+      {open && (
+        <Modal onClose={() => setOpen(false)}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateClient();
+            }}
+          >
+            <h3 className="text-lg font-semibold mb-3">New Client</h3>
+
+            <input
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Client name"
+              className="w-full border p-2 mb-3 rounded outline-none focus:ring-1 focus:ring-gray-400"
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+            >
+              Create
+            </button>
+          </form>
+        </Modal>
+      )}
+
+      {confirmOpen && selectedClient && (
+        <Modal onClose={() => setConfirmOpen(false)}>
+          <h3 className="text-lg font-semibold mb-3">Delete Client</h3>
+
+          <p className="text-sm text-gray-600 mb-5">
+            Delete <span className="font-medium">{selectedClient.name}</span>?
+          </p>
+
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setConfirmOpen(false)}
+              className="px-3 py-2 text-sm rounded hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={() => {
+                deleteClient(selectedClient.id, {
+                  onSuccess: () => {
+                    setSelectedClient(null);
+                    setSelectedNote(null);
+                    toast.success("Client deleted");
+                  },
+                  onError: () => toast.error("Error deleting client"),
+                });
+
+                setConfirmOpen(false);
+              }}
+              className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

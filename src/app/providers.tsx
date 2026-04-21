@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useState } from "react";
+import { Toaster } from "sonner";
 
 export const ClientContext = createContext<any>(null);
 
@@ -22,6 +23,15 @@ export default function Providers({ children }: any) {
         }}
       >
         {children}
+        <Toaster
+          position="bottom-right"
+          expand={false}
+          richColors
+          toastOptions={{
+            className:
+              "w-fit max-w-xs ml-auto text-sm px-3 py-2 rounded-md shadow-md border bg-white text-gray-800",
+          }}
+        />
       </ClientContext.Provider>
     </QueryClientProvider>
   );
