@@ -12,27 +12,34 @@ export default function Sidebar() {
   const { mutate } = useCreateClient();
   const router = useRouter();
 
-const handleLogout = () => {
-  localStorage.removeItem("access");
-  localStorage.removeItem("refresh");
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
 
-  router.push("/login");
-};
+    router.push("/login");
+  };
 
   return (
-    <div className="w-64 border-r bg-gray-50 h-full flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="font-semibold text-sm text-gray-600">
-          Clients
-        </h2>
+    <div className="w-64 border-r bg-white p-4 flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-gray-500">CLIENTS</h2>
+
+        <button
+          onClick={() =>
+            mutate({ name: "Nuevo Cliente", email: "test@test.com" })
+          }
+          className="text-sm px-2 py-1 rounded hover:bg-gray-100"
+        >
+          +
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div className="flex-1 space-y-1">
         {data?.map((client: any) => (
           <div
             key={client.id}
             onClick={() => setSelectedClient(client)}
-            className={`px-3 py-2 text-sm rounded-md cursor-pointer transition ${
+            className={`px-3 py-2 rounded cursor-pointer text-sm transition ${
               selectedClient?.id === client.id
                 ? "bg-gray-200 font-medium"
                 : "hover:bg-gray-100"
@@ -43,23 +50,15 @@ const handleLogout = () => {
         ))}
       </div>
 
-      <div className="p-3 border-t space-y-2">
-        <button
-          onClick={() =>
-            mutate({ name: "Nuevo Cliente", email: "test@test.com" })
-          }
-          className="w-full text-sm bg-black text-white py-2 rounded-md"
-        >
-          + New Client
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="w-full text-xs text-red-500"
-        >
-          Logout
-        </button>
-      </div>
+      <button
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = "/login";
+        }}
+        className="mt-4 text-xs text-gray-500 hover:text-black"
+      >
+        Logout
+      </button>
     </div>
   );
 }

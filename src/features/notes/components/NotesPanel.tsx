@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { ClientContext } from "@/app/providers";
 import { useNotes } from "../hooks/useNotes";
 import { useCreateNote } from "../hooks/useCreateNotes";
+import NoteItem from "./NoteItem";
 
 export default function NotesPanel() {
   const { selectedClient } = useContext(ClientContext);
@@ -31,14 +32,12 @@ export default function NotesPanel() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">
-        {selectedClient.name}
-      </h2>
+    <div className="max-w-2xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">{selectedClient.name}</h2>
 
-      <div className="mb-4">
+      <div className="mb-6">
         <input
-          className="w-full p-4 text-lg border rounded-lg outline-none focus:ring-1 focus:ring-gray-400"
+          className="w-full p-4 text-lg bg-transparent border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black/10 transition"
           placeholder="Start typing a note..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -48,28 +47,17 @@ export default function NotesPanel() {
         />
       </div>
 
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <p className="text-sm text-gray-400">Loading notes...</p>}
 
-      {data?.length === 0 && (
-        <p className="text-gray-500">No notes yet</p>
-      )}
+      <p className="text-sm text-gray-400">
+        No notes yet. Start typing above 👆
+      </p>
 
-    <div className="space-y-3">
-      {data?.map((note: any) => (
-        <div
-          key={note.id}
-          className="p-4 bg-white border rounded-lg hover:shadow-sm transition"
-        >
-          <div className="flex justify-between items-center">
-            <p className="font-medium text-sm">{note.title}</p>
-
-            <span className="text-xs text-gray-400 capitalize">
-              {note.type}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
+      <div className="space-y-2">
+        {data?.map((note: any) => (
+          <NoteItem key={note.id} note={note} />
+        ))}
+      </div>
     </div>
   );
 }

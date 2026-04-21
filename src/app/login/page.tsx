@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLogin } from "@/features/auth/hooks/useLogin";
 import { useRouter } from "next/navigation";
+import "../globals.css"
 
 export default function Login() {
   const { mutate, isPending } = useLogin();
