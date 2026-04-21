@@ -32,7 +32,7 @@ export default function Sidebar() {
 
   // 🔹 Crear nota
   const handleCreateNote = () => {
-    if (!selectedClient) return;
+    if (!selectedClient?.id) return;
 
     createNote(
       {
@@ -49,23 +49,37 @@ export default function Sidebar() {
     );
   };
 
+  function updateClient(arg0: { id: any; data: { name: string } }): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="w-64 border-r bg-white p-4 flex flex-col">
-      {/* 🔴 ESTADO 1: CLIENTS */}
+      {/* CLIENTS */}
       {!selectedClient && (
         <>
-          <div className="flex justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-500">CLIENTS</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xs font-semibold text-gray-400 tracking-wide">
+              CLIENTS
+            </h2>
 
-            <button onClick={() => setOpen(true)}>+</button>
+            <button
+              onClick={() => setOpen(true)}
+              className="px-2 py-1 rounded hover:bg-gray-100"
+            >
+              +
+            </button>
           </div>
 
           <div className="space-y-1">
             {clients?.map((client: any) => (
               <div
                 key={client.id}
-                onClick={() => setSelectedClient(client)}
-                className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
+                onClick={() => {
+                  setSelectedClient(client);
+                  setSelectedNote(null);
+                }}
+                className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer text-sm"
               >
                 {client.name}
               </div>
@@ -74,7 +88,7 @@ export default function Sidebar() {
         </>
       )}
 
-      {/* 🔵 ESTADO 2: NOTES */}
+      {/* NOTES */}
       {selectedClient && (
         <>
           <button
@@ -82,53 +96,84 @@ export default function Sidebar() {
               setSelectedClient(null);
               setSelectedNote(null);
             }}
-            className="text-xs text-gray-500 mb-3"
+            className="text-xs text-gray-400 mb-3 hover:text-black"
           >
             ← Back
           </button>
 
-          <div className="flex justify-between mb-4">
+          <div className="flex justify-between items-center mb-4">
             <h3 className="text-sm font-semibold">{selectedClient.name}</h3>
 
-            <button onClick={handleCreateNote}>+</button>
+            <button
+              onClick={handleCreateNote}
+              className="px-2 py-1 rounded hover:bg-gray-100"
+            >
+              +
+            </button>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 overflow-y-auto">
             {notes?.map((note: any) => (
               <div
                 key={note.id}
                 onClick={() => setSelectedNote(note)}
-                className={`px-3 py-2 rounded cursor-pointer ${
+                className={`px-3 py-2 rounded cursor-pointer text-sm ${
                   selectedNote?.id === note.id
-                    ? "bg-gray-200"
+                    ? "bg-gray-200 font-medium"
                     : "hover:bg-gray-100"
                 }`}
               >
-                {note.title || "Untitled"}
+                {note.title?.trim() || "Untitled"}
               </div>
             ))}
           </div>
         </>
       )}
 
-      {/* MODAL CLIENT */}
+      {/* MODAL */}
       {open && (
         <Modal onClose={() => setOpen(false)}>
+          <h3 className="text-lg font-semibold mb-3">New Client</h3>
+
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Client name"
-            className="w-full border p-2 mb-3"
+            className="w-full border p-2 mb-3 rounded"
           />
+
+          {selectedClient && (
+            <input
+              value={selectedClient.name || ""}
+              onChange={(e) =>
+                updateClient({
+                  id: selectedClient.id,
+                  data: { name: e.target.value },
+                })
+              }
+              className="w-full border p-2 mb-3 rounded"
+            />
+          )}
 
           <button
             onClick={handleCreateClient}
-            className="w-full bg-black text-white py-2"
+            className="w-full bg-black text-white py-2 rounded"
           >
             Create
           </button>
         </Modal>
       )}
+
+      {/* LOGOUT */}
+      <button
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = "/login";
+        }}
+        className="mt-4 text-xs text-gray-400 hover:text-black"
+      >
+        Logout
+      </button>
     </div>
   );
 }
