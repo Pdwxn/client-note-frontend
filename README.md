@@ -29,6 +29,9 @@ Permite centralizar información clave como datos de contacto, reuniones, llamad
 - PostgreSQL
 - JWT Authentication
 
+### Link al Backend
+https://github.com/Pdwxn/client-note-api
+
 ## Arquitectura Frontend
 
 El frontend está organizado por features:
