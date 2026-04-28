@@ -1,6 +1,13 @@
 "use client";
 
-export default function Modal({ children, onClose }: any) {
+import { ReactNode } from "react";
+
+interface ModalProps {
+  children: ReactNode;
+  onClose: () => void;
+}
+
+export default function Modal({ children, onClose }: ModalProps) {
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
       <div className="bg-[var(--bg-secondary)] rounded-lg p-6 w-96 shadow-lg relative border">

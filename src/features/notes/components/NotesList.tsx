@@ -2,14 +2,17 @@
 
 import { useContext } from "react";
 import { ClientContext } from "@/app/providers";
-import { useNotes } from "../hooks/useNotes";
+import { useNotesList } from "../hooks/useNotes";
 import { useCreateNote } from "../hooks/useCreateNotes";
+import { Note } from "../types";
 
 export default function NotesList() {
-  const { selectedClient, selectedNote, setSelectedNote } =
-    useContext(ClientContext);
+  const context = useContext(ClientContext);
+  const selectedClient = context?.selectedClient;
+  const selectedNote = context?.selectedNote;
+  const setSelectedNote = context?.setSelectedNote;
 
-  const { data, isLoading } = useNotes(selectedClient?.id);
+  const { data, isLoading } = useNotesList(selectedClient?.id);
   const { mutate } = useCreateNote();
 
   if (!selectedClient) {
@@ -25,8 +28,8 @@ export default function NotesList() {
         client: selectedClient.id,
       },
       {
-        onSuccess: (newNote) => {
-          setSelectedNote(newNote); // 🔥 abre editor automáticamente
+        onSuccess: (newNote: Note) => {
+          if (setSelectedNote) setSelectedNote(newNote);
         },
       },
     );
@@ -52,10 +55,12 @@ export default function NotesList() {
 
       {/* LIST */}
       <div className="space-y-1 overflow-y-auto">
-        {data?.map((note: any) => (
+        {data?.map((note: Note) => (
           <div
             key={note.id}
-            onClick={() => setSelectedNote(note)}
+            onClick={() => {
+              if (setSelectedNote) setSelectedNote(note);
+            }}
             className={`px-3 py-2 rounded cursor-pointer text-sm ${
               selectedNote?.id === note.id
                 ? "bg-[var(--bg-secondary)] shadow"

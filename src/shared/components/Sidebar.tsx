@@ -15,8 +15,11 @@ import { Client } from "@/features/clients/types";
 import { Note, NoteType } from "@/features/notes/types";
 
 export default function Sidebar() {
-  const { selectedClient, setSelectedClient, selectedNote, setSelectedNote } =
-    useContext(ClientContext);
+  const context = useContext(ClientContext);
+  const selectedClient = context?.selectedClient;
+  const setSelectedClient = context?.setSelectedClient;
+  const selectedNote = context?.selectedNote;
+  const setSelectedNote = context?.setSelectedNote;
 
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -39,9 +42,7 @@ export default function Sidebar() {
   
   const { data: notesData, isLoading: loadingNotes } = useNotes(
     selectedClient?.id,
-    { search: noteSearch || undefined, type: noteTypeFilter || undefined },
-    notePage,
-    LIMIT
+    { search: noteSearch || undefined, type: noteTypeFilter || undefined }
   );
   const notes = notesData?.results || [];
   const totalNotes = notesData?.count || 0;
@@ -54,7 +55,6 @@ export default function Sidebar() {
   const { mutate: logout } = useLogout();
 
   const [open, setOpen] = useState(false);
-  const [noteOpen, setNoteOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -132,7 +132,7 @@ export default function Sidebar() {
       },
       {
         onSuccess: (newNote) => {
-          setSelectedNote(newNote);
+          if (setSelectedNote) setSelectedNote(newNote);
           toast.success("Note created");
         },
       },
@@ -155,7 +155,7 @@ export default function Sidebar() {
       {
         onSuccess: (data) => {
           toast.success("Client updated");
-          setSelectedClient(data);
+          if (setSelectedClient) setSelectedClient(data);
           setEditOpen(false);
         },
         onError: () => {
@@ -202,8 +202,8 @@ export default function Sidebar() {
               <div
                 key={client.id}
                 onClick={() => {
-                  setSelectedClient(client);
-                  setSelectedNote(null);
+                  if (setSelectedClient) setSelectedClient(client);
+                  if (setSelectedNote) setSelectedNote(null);
                 }}
                 className="px-3 py-2 rounded-md cursor-pointer text-sm transition hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
               >
@@ -240,8 +240,8 @@ export default function Sidebar() {
         <>
           <button
             onClick={() => {
-              setSelectedClient(null);
-              setSelectedNote(null);
+              if (setSelectedClient) setSelectedClient(null);
+              if (setSelectedNote) setSelectedNote(null);
             }}
             className="text-xs text-[var(--text-muted)] mb-3 hover:text-[var(--text-primary)] transition"
           >
@@ -325,7 +325,9 @@ export default function Sidebar() {
             {notes?.map((note: Note) => (
               <div
                 key={note.id}
-                onClick={() => setSelectedNote(note)}
+                onClick={() => {
+                if (setSelectedNote) setSelectedNote(note);
+              }}
                 className={`px-3 py-2 rounded-md cursor-pointer text-sm transition ${
                   selectedNote?.id === note.id
                     ? "bg-gray-200 font-medium"
@@ -492,12 +494,12 @@ export default function Sidebar() {
             <button
               onClick={() => {
                 deleteClient(selectedClient.id, {
-                  onSuccess: () => {
-                    setSelectedClient(null);
-                    setSelectedNote(null);
-                    toast.success("Client deleted");
-                    setConfirmOpen(false);
-                  },
+onSuccess: () => {
+                if (setSelectedClient) setSelectedClient(null);
+                if (setSelectedNote) setSelectedNote(null);
+                toast.success("Client deleted");
+                setConfirmOpen(false);
+              },
                 });
               }}
               className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"

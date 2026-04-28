@@ -2,15 +2,17 @@
 
 import { useContext, useState } from "react";
 import { ClientContext } from "@/app/providers";
-import { useNotes } from "../hooks/useNotes";
+import { useNotesList } from "../hooks/useNotes";
 import { useCreateNote } from "../hooks/useCreateNotes";
 import NoteItem from "./NoteItem";
+import { Note } from "../types";
 
 export default function NotesPanel() {
-  const { selectedClient } = useContext(ClientContext);
+  const context = useContext(ClientContext);
+  const selectedClient = context?.selectedClient;
 
-  const { data, isLoading } = useNotes(selectedClient?.id);
-  const { mutate, isPending } = useCreateNote();
+  const { data, isLoading } = useNotesList(selectedClient?.id);
+  const { mutate } = useCreateNote();
 
   const [title, setTitle] = useState("");
 
@@ -54,7 +56,7 @@ export default function NotesPanel() {
       </p>
 
       <div className="space-y-2">
-        {data?.map((note: any) => (
+        {data?.map((note: Note) => (
           <NoteItem key={note.id} note={note} />
         ))}
       </div>

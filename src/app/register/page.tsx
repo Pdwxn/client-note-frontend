@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRegister } from "@/features/auth/hooks/useRegister";
 import { useLogin } from "@/features/auth/hooks/useLogin";
 import { useRouter } from "next/navigation";
+import { RegisterData } from "@/features/auth/types";
+import { LoginCredentials } from "@/features/auth/types";
 
 export default function Register() {
   const router = useRouter();
@@ -19,9 +21,12 @@ export default function Register() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    register(form, {
+    const registerData: RegisterData = form;
+    const loginData: LoginCredentials = form;
+
+    register(registerData, {
       onSuccess: () => {
-        login(form, {
+        login(loginData, {
           onSuccess: () => {
             router.push("/dashboard");
           },

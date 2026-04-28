@@ -1,6 +1,8 @@
 import Sidebar from "./Sidebar";
 
-export default function Layout({ children }: any) {
+import { ReactNode } from "react";
+
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen bg-[var(--bg-primary)]">
       {/* CLIENTS */}

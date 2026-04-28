@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { useUpdateNote } from "../hooks/useUpdateNote";
+import { Note } from "../types";
 
-export default function NoteItem({ note }: any) {
+interface NoteItemProps {
+  note: Note;
+}
+
+export default function NoteItem({ note }: NoteItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(note.title);
 

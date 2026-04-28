@@ -6,16 +6,19 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import Badge from "@/shared/components/Badge";
 import { useUpdateNote } from "../hooks/useUpdateNote";
 import { useDeleteNote } from "../hooks/useDeleteNote";
+import { NoteType } from "../types";
 
 export default function NotesEditor() {
-  const { selectedNote, setSelectedNote } = useContext(ClientContext);
+  const context = useContext(ClientContext);
+  const selectedNote = context?.selectedNote;
+  const setSelectedNote = context?.setSelectedNote;
 
   const { mutate: updateNote } = useUpdateNote();
   const { mutate: deleteNote } = useDeleteNote();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [type, setType] = useState("idea");
+  const [type, setType] = useState<NoteType>("idea");
   const [saving, setSaving] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
@@ -42,7 +45,7 @@ export default function NotesEditor() {
     if (!selectedNote) return;
 
     const currentTitle = debouncedTitle || "Untitled";
-    
+
     if (
       currentTitle === (selectedNote.title || "Untitled") &&
       debouncedContent === (selectedNote.content || "") &&
@@ -67,7 +70,7 @@ export default function NotesEditor() {
         onSettled: () => setSaving(false),
       },
     );
-  }, [debouncedTitle, debouncedContent, type]);
+  }, [debouncedTitle, debouncedContent, type, selectedNote, updateNote]);
 
   if (!selectedNote) {
     return (
@@ -100,7 +103,7 @@ export default function NotesEditor() {
         <div className="flex items-center gap-2">
           <select
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) => setType(e.target.value as NoteType)}
             className="text-xs border px-2 py-1 rounded bg-[var(--bg-secondary)] text-[var(--text-primary)]"
           >
             <option value="idea">Idea</option>
@@ -115,7 +118,7 @@ export default function NotesEditor() {
             onClick={() => {
               deleteNote(selectedNote.id, {
                 onSuccess: () => {
-                  setSelectedNote(null);
+                  if (setSelectedNote) setSelectedNote(null);
                 },
               });
             }}

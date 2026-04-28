@@ -1,17 +1,24 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createContext, useState } from "react";
+import { createContext, useState, ReactNode } from "react";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/shared/hooks/useTheme";
+import { Client } from "@/features/clients/types";
+import { Note } from "@/features/notes/types";
 
-export const ClientContext = createContext<any>(null);
+export const ClientContext = createContext<{
+  selectedClient: Client | null;
+  setSelectedClient: (client: Client | null) => void;
+  selectedNote: Note | null;
+  setSelectedNote: (note: Note | null) => void;
+} | null>(null);
 
 const queryClient = new QueryClient();
 
-export default function Providers({ children }: any) {
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedNote, setSelectedNote] = useState(null);
+export default function Providers({ children }: { children: ReactNode }) {
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   return (
     <ThemeProvider>
