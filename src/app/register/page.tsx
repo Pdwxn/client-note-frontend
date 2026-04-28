@@ -32,31 +32,31 @@ export default function Register() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-xl shadow-sm w-[350px]">
+    <div className="flex h-screen items-center justify-center bg-[var(--bg-primary)]">
+      <div className="bg-[var(--bg-secondary)] p-8 rounded-xl shadow-sm w-[350px] border">
         {/* 🔙 BACK */}
         <button
           onClick={() => router.push("/login")}
-          className="text-sm text-gray-500 mb-4 hover:text-black"
+          className="text-sm text-[var(--text-muted)] mb-4 hover:text-[var(--text-primary)]"
         >
           ← Back to login
         </button>
 
-        <h2 className="text-xl font-semibold mb-6 text-center">
+        <h2 className="text-xl font-semibold mb-6 text-center text-[var(--text-primary)]">
           Create account
         </h2>
 
         <form onSubmit={handleSubmit}>
           <input
             placeholder="Username"
-            className="w-full mb-3 p-2 border rounded"
+            className="w-full mb-3 p-2 border rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
 
           <input
             type="password"
             placeholder="Password"
-            className="w-full mb-4 p-2 border rounded"
+            className="w-full mb-4 p-2 border rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 

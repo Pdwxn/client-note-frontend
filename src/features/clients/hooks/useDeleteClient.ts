@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/utils/axios";
+import { handleApiError } from "@/shared/utils/apiError";
 
 export const useDeleteClient = () => {
   const queryClient = useQueryClient();
@@ -19,6 +20,9 @@ export const useDeleteClient = () => {
       queryClient.invalidateQueries({
         queryKey: ["notes"],
       });
+    },
+    onError: (error) => {
+      handleApiError(error, "Failed to delete client");
     },
   });
 };

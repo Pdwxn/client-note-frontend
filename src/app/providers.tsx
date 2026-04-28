@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useState } from "react";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/shared/hooks/useTheme";
 
 export const ClientContext = createContext<any>(null);
 
@@ -13,26 +14,25 @@ export default function Providers({ children }: any) {
   const [selectedNote, setSelectedNote] = useState(null);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ClientContext.Provider
-        value={{
-          selectedClient,
-          setSelectedClient,
-          selectedNote,
-          setSelectedNote,
-        }}
-      >
-        {children}
-        <Toaster
-          position="bottom-right"
-          expand={false}
-          richColors
-          toastOptions={{
-            className:
-              "w-fit max-w-xs ml-auto text-sm px-3 py-2 rounded-md shadow-md border bg-white text-gray-800",
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ClientContext.Provider
+          value={{
+            selectedClient,
+            setSelectedClient,
+            selectedNote,
+            setSelectedNote,
           }}
-        />
-      </ClientContext.Provider>
-    </QueryClientProvider>
+        >
+          {children}
+          <Toaster
+            position="bottom-right"
+            expand={false}
+            richColors
+            theme="system"
+          />
+        </ClientContext.Provider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

@@ -25,7 +25,7 @@ export default function NoteItem({ note }: any) {
   };
 
   return (
-    <div className="group p-4 bg-white border border-gray-200 rounded-xl hover:shadow-sm hover:border-gray-300 transition">
+    <div className="group p-4 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl hover:shadow-sm hover:border-[var(--text-muted)] transition">
       {isEditing ? (
         <input
           autoFocus
@@ -39,13 +39,13 @@ export default function NoteItem({ note }: any) {
               setIsEditing(false);
             }
           }}
-          className="w-full outline-none text-gray-800"
+          className="w-full outline-none text-[var(--text-primary)]"
         />
       ) : (
         <div onClick={() => setIsEditing(true)} className="cursor-text">
-          <p className="font-medium text-gray-800">{note.title}</p>
+          <p className="font-medium text-[var(--text-primary)]">{note.title}</p>
 
-          <span className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition">
+          <span className="text-xs text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition">
             {note.type}
           </span>
         </div>

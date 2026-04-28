@@ -47,9 +47,9 @@ export default function NotesPanel() {
         />
       </div>
 
-      {isLoading && <p className="text-sm text-gray-400">Loading notes...</p>}
+      {isLoading && <p className="text-sm text-[var(--text-muted)]">Loading notes...</p>}
 
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-[var(--text-muted)]">
         No notes yet. Start typing above 👆
       </p>
 

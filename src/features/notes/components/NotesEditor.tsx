@@ -5,7 +5,7 @@ import { ClientContext } from "@/app/providers";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import Badge from "@/shared/components/Badge";
 import { useUpdateNote } from "../hooks/useUpdateNote";
-import { useDeleteNote } from "@/features/auth/hooks/useDeleteNote";
+import { useDeleteNote } from "../hooks/useDeleteNote";
 
 export default function NotesEditor() {
   const { selectedNote, setSelectedNote } = useContext(ClientContext);
@@ -23,11 +23,13 @@ export default function NotesEditor() {
   const debouncedTitle = useDebounce(title, 800);
   const debouncedContent = useDebounce(content, 800);
 
-  // 🔥 Sync con nota seleccionada
   useEffect(() => {
     if (selectedNote) {
-      setTitle(selectedNote.title || "");
-      setContent(selectedNote.content || "");
+      const noteTitle = selectedNote.title || "";
+      const noteContent = selectedNote.content || "";
+      
+      setTitle(noteTitle);
+      setContent(noteContent);
       setType(selectedNote.type || "idea");
 
       setTimeout(() => {
@@ -36,13 +38,14 @@ export default function NotesEditor() {
     }
   }, [selectedNote]);
 
-  // 🔥 Autosave
   useEffect(() => {
     if (!selectedNote) return;
 
+    const currentTitle = debouncedTitle || "Untitled";
+    
     if (
-      debouncedTitle === selectedNote.title &&
-      debouncedContent === selectedNote.content &&
+      currentTitle === (selectedNote.title || "Untitled") &&
+      debouncedContent === (selectedNote.content || "") &&
       type === selectedNote.type
     ) {
       return;
@@ -54,7 +57,7 @@ export default function NotesEditor() {
       {
         id: selectedNote.id,
         data: {
-          title: debouncedTitle,
+          title: currentTitle,
           content: debouncedContent,
           type,
           client: selectedNote.client,
@@ -68,7 +71,7 @@ export default function NotesEditor() {
 
   if (!selectedNote) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-400">
+      <div className="flex items-center justify-center h-full text-[var(--text-muted)]">
         Select a note
       </div>
     );
@@ -76,18 +79,29 @@ export default function NotesEditor() {
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-10">
-      {/* 🔥 HEADER */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-xs text-gray-400">
-          {saving ? "Saving..." : "Saved"}
-        </span>
+        <div className="flex flex-col">
+          <span className="text-xs text-[var(--text-muted)]">
+            {saving ? "Saving..." : "Saved"}
+          </span>
+          {selectedNote?.created_at && (
+            <span className="text-xs text-[var(--text-muted)]">
+              Created: {new Date(selectedNote.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
-          {/* TYPE SELECTOR */}
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="text-xs border px-2 py-1 rounded bg-white"
+            className="text-xs border px-2 py-1 rounded bg-[var(--bg-secondary)] text-[var(--text-primary)]"
           >
             <option value="idea">Idea</option>
             <option value="meeting">Meeting</option>
@@ -95,10 +109,8 @@ export default function NotesEditor() {
             <option value="contract">Contract</option>
           </select>
 
-          {/* BADGE */}
           <Badge type={type} />
 
-          {/* DELETE */}
           <button
             onClick={() => {
               deleteNote(selectedNote.id, {
@@ -114,10 +126,9 @@ export default function NotesEditor() {
         </div>
       </div>
 
-      {/* 🔥 TITLE */}
-      <input
+<input
         ref={titleRef}
-        className="text-4xl font-semibold w-full mb-6 outline-none"
+        className="text-4xl font-semibold w-full mb-6 outline-none bg-transparent"
         placeholder="Untitled"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -125,7 +136,14 @@ export default function NotesEditor() {
 
       {/* 🔥 CONTENT */}
       <textarea
-        className="w-full min-h-[400px] outline-none text-gray-700 resize-none leading-relaxed"
+        className="w-full min-h-[400px] outline-none resize-none leading-relaxed bg-transparent text-[var(--text-primary)]"
+        placeholder="Start writing..."
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+      />
+
+      <textarea
+        className="w-full min-h-[400px] outline-none resize-none leading-relaxed bg-transparent text-[var(--text-primary)]"
         placeholder="Start writing..."
         value={content}
         onChange={(e) => setContent(e.target.value)}

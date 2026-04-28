@@ -35,16 +35,16 @@ export default function NotesList() {
   if (isLoading) return <p>Loading notes...</p>;
 
   return (
-    <div className="w-64 border-r bg-gray-50 p-3 flex flex-col">
+    <div className="w-64 border-r bg-[var(--bg-primary)] p-3 flex flex-col">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-600">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
           {selectedClient.name}
         </h3>
 
         <button
           onClick={handleCreateNote}
-          className="text-sm px-2 py-1 rounded hover:bg-gray-200"
+          className="text-sm px-2 py-1 rounded hover:bg-[var(--bg-tertiary)]"
         >
           +
         </button>
@@ -58,8 +58,8 @@ export default function NotesList() {
             onClick={() => setSelectedNote(note)}
             className={`px-3 py-2 rounded cursor-pointer text-sm ${
               selectedNote?.id === note.id
-                ? "bg-white shadow"
-                : "hover:bg-gray-200"
+                ? "bg-[var(--bg-secondary)] shadow"
+                : "hover:bg-[var(--bg-tertiary)]"
             }`}
           >
             {note.title || "Untitled"}

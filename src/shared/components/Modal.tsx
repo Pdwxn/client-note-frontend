@@ -3,10 +3,10 @@
 export default function Modal({ children, onClose }: any) {
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-lg relative">
+      <div className="bg-[var(--bg-secondary)] rounded-lg p-6 w-96 shadow-lg relative border">
         <button
           onClick={onClose}
-          className="absolute top-2 right-3 text-gray-400 hover:text-black"
+          className="absolute top-2 right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
         >
           ✕
         </button>
