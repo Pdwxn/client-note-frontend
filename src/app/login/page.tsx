@@ -22,7 +22,7 @@ export default function Login() {
     setIsPending(true);
 
     try {
-      const res = await axios.post(`${API_URL}/token/`, form, {
+      const res = await axios.post(`${API_URL}/api/token/`, form, {
         timeout: 5000,
       });
 
