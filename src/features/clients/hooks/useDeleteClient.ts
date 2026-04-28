@@ -9,7 +9,7 @@ export const useDeleteClient = () => {
 
   return useMutation({
     mutationFn: async (clientId: number) => {
-      await api.delete(`/clients/${clientId}/`);
+      await api.delete(`/api/clients/${clientId}/`);
     },
 
     onSuccess: () => {

@@ -16,7 +16,7 @@ interface LoginSuccessData extends Token {
 export const useLogin = () => {
   return useMutation<LoginSuccessData, unknown, LoginCredentials>({
     mutationFn: async (data: LoginCredentials) => {
-      const res = await api.post<LoginSuccessData>("/token/", data);
+      const res = await api.post<LoginSuccessData>("/api/token/", data);
       return res.data;
     },
 

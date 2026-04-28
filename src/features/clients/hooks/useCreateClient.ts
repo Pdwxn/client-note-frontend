@@ -8,7 +8,7 @@ export const useCreateClient = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ClientCreate) => api.post("/clients/", data),
+    mutationFn: (data: ClientCreate) => api.post("/api/clients/", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },

@@ -44,7 +44,7 @@ export const useNotes = (clientId?: number, filters?: NoteFilters, page?: number
         params.append("limit", limit.toString());
       }
 
-      const res = await api.get<PaginatedResponse<Note>>(`/notes/?${params.toString()}`);
+      const res = await api.get<PaginatedResponse<Note>>(`/api/notes/?${params.toString()}`);
       return res.data;
     },
     enabled: !!clientId,

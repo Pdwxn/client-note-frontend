@@ -8,7 +8,7 @@ export const useUpdateNote = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: number; data: NoteUpdate }) => {
-      const res = await api.patch(`/notes/${id}/`, data);
+      const res = await api.patch(`/api/notes/${id}/`, data);
       return res.data;
     },
 

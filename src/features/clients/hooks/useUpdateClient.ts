@@ -8,7 +8,7 @@ export const useUpdateClient = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: number; data: ClientUpdate }) => {
-      const res = await api.patch(`/clients/${id}/`, data);
+      const res = await api.patch(`/api/clients/${id}/`, data);
       return res.data;
     },
     onSuccess: () => {

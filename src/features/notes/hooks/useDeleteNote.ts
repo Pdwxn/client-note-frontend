@@ -8,7 +8,7 @@ export const useDeleteNote = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      await api.delete(`/notes/${id}/`);
+      await api.delete(`/api/notes/${id}/`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });

@@ -16,7 +16,7 @@ export const useLogout = () => {
 
       if (refreshToken) {
         try {
-          await axios.post(`${API_URL}/token/blacklist/`, {
+          await axios.post(`${API_URL}/api/token/blacklist/`, {
             refresh: refreshToken,
           });
         } catch {

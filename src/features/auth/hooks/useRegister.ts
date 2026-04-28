@@ -7,7 +7,7 @@ import { RegisterData } from "../types";
 export const useRegister = () => {
   return useMutation({
     mutationFn: async (data: RegisterData) => {
-      const res = await api.post("/auth/register/", data);
+      const res = await api.post("/api/auth/", data);
       return res.data;
     },
   });

@@ -38,7 +38,7 @@ export const useClients = (filters?: ClientFilters, page?: number, limit?: numbe
       }
 
       const queryString = params.toString();
-      const url = queryString ? `/clients/?${queryString}` : "/clients/";
+      const url = queryString ? `/api/clients/?${queryString}` : "/api/clients/";
       
       const res = await api.get(url);
       return res.data;

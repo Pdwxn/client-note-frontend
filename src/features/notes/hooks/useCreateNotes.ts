@@ -10,7 +10,7 @@ export const useCreateNote = () => {
 
   return useMutation({
     mutationFn: async (data: NoteCreate) => {
-      const res = await api.post("/notes/", data);
+      const res = await api.post("/api/notes/", data);
       return res.data;
     },
 
