@@ -9,24 +9,23 @@ export default function Register() {
   const router = useRouter();
 
   const { mutate: register, isPending } = useRegister();
-
-  const { mutate: login } = useLogin({
-    onSuccess: () => {
-      router.push("/dashboard");
-    },
-  });
+  const { mutate: login } = useLogin();
 
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     register(form, {
       onSuccess: () => {
-        login(form);
+        login(form, {
+          onSuccess: () => {
+            router.push("/dashboard");
+          },
+        });
       },
     });
   };
